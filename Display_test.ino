@@ -24,7 +24,11 @@ Test OK : Arduino DUE,Arduino mega2560,Arduino UNO Board
 #include <SPI.h>
 #include "er_oled.h"
 
+
 uint8_t oled_buf[WIDTH * HEIGHT / 8];
+
+
+int counter = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -72,8 +76,20 @@ void setup() {
 */
 er_oled_string(1, 16, "Speed: ", 16, 4, oled_buf); 
   er_oled_display(oled_buf); 
+
+//String currentLine = "LOL";
+//char *buffer = (char*) malloc(sizeof(char)*(currentLine.length() + 1));
+//currentLine.toCharArray(buffer, currentLine.length() + 1);
+
 }
 
 void loop() {
-
+    counter = 70;
+    String currentLine = String(counter);
+      char *buffer = (char*) malloc(sizeof(char)*(currentLine.length() + 1));
+      //currentLine.toCharArray(buffer, currentLine.length() + 1);
+      er_oled_string(1, 16, "Speed: ", 16, 4, oled_buf); 
+      er_oled_string(1, 32, buffer, 16, 4, oled_buf);
+      er_oled_display(oled_buf);
+      delay(300);
 }
