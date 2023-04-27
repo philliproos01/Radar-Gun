@@ -1,95 +1,112 @@
-/***************************************************
-//Web: http://www.buydisplay.com
-EastRising Technology Co.,LTD
-Examples for ER-OLEDM0.96-1
-Display is Hardward SPI 4-Wire SPI Interface 
-Tested and worked with:
-Works with Arduino 1.6.0 IDE  
-Test OK : Arduino DUE,Arduino mega2560,Arduino UNO Board 
-****************************************************/
+/*********************************************************************
+  This is an example for our Monochrome OLEDs based on SH110X drivers
 
-/*
-  == Hardware connection ==
-    OLED   =>    Arduino
-  *1. GND    ->    GND
-  *2. VCC    ->    3.3V
-  *3. SCL    ->    SCK
-  *4. SDA    ->    MOSI
-  *5. RES    ->    8 
-  *6. DC     ->    9
-  *7. CS     ->    10
-*/
+  This example is for a 128x64 size display using SPi to communicate
+  5 pins are required to interface 
+
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
+  products from Adafruit!
+
+  Written by Limor Fried/Ladyada  for Adafruit Industries.
+  BSD license, check license.txt for more information
+  All text above, and the splash screen must be included in any redistribution
+
+  SPi SH1106 modified by Rupert Hirst  12/09/21
+*********************************************************************/
+
 
 
 #include <SPI.h>
-#include "er_oled.h"
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
 
 
-uint8_t oled_buf[WIDTH * HEIGHT / 8];
+#define OLED_MOSI     9
+#define OLED_CLK      10
+#define OLED_DC       11
+#define OLED_CS       12
+#define OLED_RST      13
 
+
+// Create the OLED display
+Adafruit_SH1106G display = Adafruit_SH1106G(128, 64,OLED_MOSI, OLED_CLK, OLED_DC, OLED_RST, OLED_CS);
+
+
+#define NUMFLAKES 10
+#define XPOS 0
+#define YPOS 1
+#define DELTAY 2
+
+
+#define LOGO16_GLCD_HEIGHT 16
+#define LOGO16_GLCD_WIDTH  16
+static const unsigned char PROGMEM logo16_glcd_bmp[] =
+{ B00000000, B11000000,
+  B00000001, B11000000,
+  B00000001, B11000000,
+  B00000011, B11100000,
+  B11110011, B11100000,
+  B11111110, B11111000,
+  B01111110, B11111111,
+  B00110011, B10011111,
+  B00011111, B11111100,
+  B00001101, B01110000,
+  B00011011, B10100000,
+  B00111111, B11100000,
+  B00111111, B11110000,
+  B01111100, B11110000,
+  B01110000, B01110000,
+  B00000000, B00110000
+};
 
 int counter = 0;
 
-void setup() {
+void setup()   {
   Serial.begin(9600);
-  Serial.print("OLED Example\n");
 
-  /* display an image of bitmap matrix */
-  er_oled_begin();
-  er_oled_clear(oled_buf);
-  /*er_oled_bitmap(0, 0, PIC1, 128, 64, oled_buf);
-  er_oled_display(oled_buf);
-  delay(3000);  
-  command(0xa7);//--set Negative display 
-  delay(3000);
-  command(0xa6);//--set normal display
-  
-  er_oled_clear(oled_buf);
-  er_oled_bitmap(0, 0, PIC2, 128, 64, oled_buf);
-  er_oled_display(oled_buf);
-  delay(3000);
-  
-  command(0xa7);//--set Negative display 
-  delay(3000); 
-  command(0xa6);//--set normal display  
-  */
-  er_oled_clear(oled_buf);
-  /* display images of bitmap matrix */
-  /*er_oled_bitmap(0, 2, Signal816, 16, 8, oled_buf); 
-  er_oled_bitmap(24, 2,Bluetooth88, 8, 8, oled_buf); 
-  er_oled_bitmap(40, 2, Msg816, 16, 8, oled_buf); 
-  er_oled_bitmap(64, 2, GPRS88, 8, 8, oled_buf); 
-  er_oled_bitmap(90, 2, Alarm88, 8, 8, oled_buf); 
-  er_oled_bitmap(112, 2, Bat816, 16, 8, oled_buf); 
+  //display.setContrast (0); // dim display
 
-  //
+  // Start OLED
+  display.begin(0, true); // we dont use the i2c address but we will reset!
+
+
+  // Show image buffer on the display hardware.
+  // Since the buffer is intialized with an Adafruit splashscreen
+  // internally, this will display the splashscreen.
+  display.display();
+  delay(2000);
+
+  // Clear the buffer.
+  display.clearDisplay();
+
+  // text display tests
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(0, 0);
+  display.println("Failure is always an option");
+  display.setTextColor(SH110X_BLACK, SH110X_WHITE); // 'inverted' text
+  display.println(3.141592);
+  display.setTextSize(2);
+  display.setTextColor(SH110X_WHITE);
+  display.print("0x"); display.println(0xDEADBEEF, HEX);
+  display.display();
+  delay(2000);
  
-
-  er_oled_char3216(0, 16, '1', oled_buf);
-  er_oled_char3216(16, 16, '2', oled_buf);
-  er_oled_char3216(32, 16, ':', oled_buf);
-  er_oled_char3216(48, 16, '3', oled_buf);
-  er_oled_char3216(64, 16, '4', oled_buf);
-  er_oled_char3216(80, 16, ':', oled_buf);
-  er_oled_char3216(96, 16, '5', oled_buf);
-  er_oled_char3216(112, 16, '6', oled_buf);
-*/
-er_oled_string(1, 16, "Speed: ", 16, 4, oled_buf); 
-  er_oled_display(oled_buf); 
-
-//String currentLine = "LOL";
-//char *buffer = (char*) malloc(sizeof(char)*(currentLine.length() + 1));
-//currentLine.toCharArray(buffer, currentLine.length() + 1);
-
+  
 }
+
 
 void loop() {
-    counter = 70;
-    String currentLine = String(counter);
-      char *buffer = (char*) malloc(sizeof(char)*(currentLine.length() + 1));
-      //currentLine.toCharArray(buffer, currentLine.length() + 1);
-      er_oled_string(1, 16, "Speed: ", 16, 4, oled_buf); 
-      er_oled_string(1, 32, buffer, 16, 4, oled_buf);
-      er_oled_display(oled_buf);
-      delay(300);
+  counter = counter + 1;
+  display.clearDisplay();
+  
+  display.setTextSize(1);
+  display.setTextColor(SH110X_WHITE);
+  display.setCursor(0, 0);
+  display.print("Failure is always an option: "); display.println(counter);
+  display.display();
+  delay(100);
 }
+
