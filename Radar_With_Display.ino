@@ -1,26 +1,11 @@
-/*********************************************************************
-  This is an example for our Monochrome OLEDs based on SH110X drivers
-
-  This example is for a 128x64 size display using SPi to communicate
-  5 pins are required to interface 
-
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing
-  products from Adafruit!
-
-  Written by Limor Fried/Ladyada  for Adafruit Industries.
-  BSD license, check license.txt for more information
-  All text above, and the splash screen must be included in any redistribution
-
-  SPi SH1106 modified by Rupert Hirst  12/09/21
-*********************************************************************/
-
-
-
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
+#include "FreqPeriod.h"
+
+double lfrq;
+long int pp;
 
 
 #define OLED_MOSI     9
@@ -65,23 +50,16 @@ int counter = 0;
 
 void setup()   {
   Serial.begin(9600);
+  FreqPeriod::begin();
+  Serial.println("FreqPeriod Library Test");
 
-  //display.setContrast (0); // dim display
-
-  // Start OLED
-  display.begin(0, true); // we dont use the i2c address but we will reset!
-
-
-  // Show image buffer on the display hardware.
-  // Since the buffer is intialized with an Adafruit splashscreen
-  // internally, this will display the splashscreen.
+  display.begin(0, true); 
   display.display();
   delay(2000);
 
   // Clear the buffer.
   display.clearDisplay();
 
-  // text display tests
   display.setTextSize(1);
   display.setTextColor(SH110X_WHITE);
   display.setCursor(0, 0);
@@ -99,14 +77,29 @@ void setup()   {
 
 
 void loop() {
-  counter = counter + 1;
   display.clearDisplay();
-  
+  pp = FreqPeriod::getPeriod();
   display.setTextSize(1);
   display.setTextColor(SH110X_WHITE);
   display.setCursor(0, 0);
-  display.print("Failure is always an option: "); display.println(counter);
+  if (pp) {
+    //Serial.print ("period: ");
+    //Serial.print(pp);
+    //Serial.print(" 1/16us / frequency: ");
+
+  lfrq = 16000400.0 /pp;
+  //if ((lfrq/31.36) > 6.0) {
+  display.print("Speed: "); display.print(lfrq/31.36); display.println(" Mph ");
+  //Serial.print(lfrq);
+  //Serial.print(" Hz ");
+  Serial.print(lfrq/31.36);
+  Serial.println( " Mph ");
+  //} else {
+  //display.print("Speed: "); display.println("0 Mph ");
+  //}
   display.display();
-  delay(100);
+  if ((lfrq/31.36) > 6.0) {
+  delay(900);
+  }
 }
 
