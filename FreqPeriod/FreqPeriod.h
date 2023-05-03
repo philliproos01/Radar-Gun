@@ -1,9 +1,3 @@
-/*
-  FreqPeriod.h - Library for a Frequency Measurement c.
-  Created by Martin Nawrath, KHM Lab3, June. 2010
-  Released into the public domain.
-*/
-
 #ifndef FreqPeriod_h
 #define FreqPeriod_h
 
