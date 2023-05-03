@@ -83,20 +83,15 @@ void loop() {
   display.setTextColor(SH110X_WHITE);
   display.setCursor(0, 0);
   if (pp) {
-    //Serial.print ("period: ");
-    //Serial.print(pp);
-    //Serial.print(" 1/16us / frequency: ");
+    // 1/16us / frequency
 
   lfrq = 16000400.0 /pp;
-  //if ((lfrq/31.36) > 6.0) {
+  
   display.print("Speed: "); display.print(lfrq/31.36); display.println(" Mph ");
-  //Serial.print(lfrq);
-  //Serial.print(" Hz ");
+  
   Serial.print(lfrq/31.36);
   Serial.println( " Mph ");
-  //} else {
-  //display.print("Speed: "); display.println("0 Mph ");
-  //}
+ 
   display.display();
   if ((lfrq/31.36) > 6.0) {
   delay(900);
